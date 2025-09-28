@@ -442,11 +442,11 @@ async def generate_lstm_prediction(symbol, current_price, days):
     }
     
     # Get symbol-specific patterns or use defaults
-    pattern = symbol_patterns.get(symbol, {'trend': 1.04, 'volatility': 0.06, 'memory_strength': 0.75})
+    symbol_data = symbol_patterns.get(symbol, {'trend': 1.04, 'volatility': 0.06, 'memory_strength': 0.75})
     
     # LSTM considers long-term patterns with time decay
     time_factor = min(days / 30, 1.0)  # Stronger predictions for shorter periods
-    trend_factor = 1 + (pattern['trend'] - 1) * time_factor
+    trend_factor = 1 + (symbol_data['trend'] - 1) * time_factor
     
     # Add market cycle influence (simulating economic cycles)
     import time
@@ -456,7 +456,7 @@ async def generate_lstm_prediction(symbol, current_price, days):
     predicted_price = current_price * (trend_factor + cycle_influence)
     
     # Confidence based on memory strength and prediction horizon
-    base_confidence = pattern['memory_strength'] * 100
+    base_confidence = symbol_data['memory_strength'] * 100
     horizon_penalty = min(days * 0.5, 20)  # Longer predictions less confident
     confidence = max(60, base_confidence - horizon_penalty)
     
@@ -473,15 +473,11 @@ async def generate_lstm_prediction(symbol, current_price, days):
     else:
         pattern_desc = "Bearish Trend Detected"
     
-    # LSTM-specific insights
-    patterns = ['Bull Market Memory', 'Bear Market Recovery', 'Sideways Consolidation', 'Breakout Pattern']
-    pattern = random.choice(patterns)
-    
     return {
         'price': round(predicted_price, 2),
         'confidence': round(confidence, 1),
         'pattern': pattern_desc,
-        'memory_strength': round(pattern['memory_strength'] * 100, 1),
+        'memory_strength': round(symbol_data['memory_strength'] * 100, 1),
         'time_horizon': f"{days} days",
         'trend_factor': round(trend_factor, 3)
     }
