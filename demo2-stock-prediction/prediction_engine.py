@@ -430,23 +430,60 @@ async def generate_lstm_prediction(symbol, current_price, days):
     
     await asyncio.sleep(0.5)  # Simulate processing time
     
-    # LSTM considers long-term patterns
-    trend_factor = np.random.uniform(0.95, 1.08)  # Long-term trend
-    volatility = np.random.uniform(0.02, 0.08)
+    # LSTM analyzes long-term memory patterns based on symbol characteristics
+    symbol_patterns = {
+        'AAPL': {'trend': 1.05, 'volatility': 0.04, 'memory_strength': 0.85},
+        'GOOGL': {'trend': 1.03, 'volatility': 0.06, 'memory_strength': 0.78},
+        'MSFT': {'trend': 1.06, 'volatility': 0.03, 'memory_strength': 0.88},
+        'TSLA': {'trend': 1.08, 'volatility': 0.12, 'memory_strength': 0.65},
+        'AMZN': {'trend': 1.04, 'volatility': 0.05, 'memory_strength': 0.82},
+        'NVDA': {'trend': 1.10, 'volatility': 0.08, 'memory_strength': 0.75},
+        'META': {'trend': 1.07, 'volatility': 0.07, 'memory_strength': 0.70}
+    }
     
-    predicted_price = current_price * (trend_factor ** (days/30))
-    confidence = np.random.uniform(75, 90)
+    # Get symbol-specific patterns or use defaults
+    pattern = symbol_patterns.get(symbol, {'trend': 1.04, 'volatility': 0.06, 'memory_strength': 0.75})
+    
+    # LSTM considers long-term patterns with time decay
+    time_factor = min(days / 30, 1.0)  # Stronger predictions for shorter periods
+    trend_factor = 1 + (pattern['trend'] - 1) * time_factor
+    
+    # Add market cycle influence (simulating economic cycles)
+    import time
+    cycle_phase = (time.time() / (86400 * 30)) % 12  # 12-month cycle
+    cycle_influence = 0.02 * np.sin(cycle_phase)  # ±2% cycle influence
+    
+    predicted_price = current_price * (trend_factor + cycle_influence)
+    
+    # Confidence based on memory strength and prediction horizon
+    base_confidence = pattern['memory_strength'] * 100
+    horizon_penalty = min(days * 0.5, 20)  # Longer predictions less confident
+    confidence = max(60, base_confidence - horizon_penalty)
+    
+    # Determine pattern based on price movement
+    price_change = (predicted_price - current_price) / current_price
+    if price_change > 0.05:
+        pattern_desc = "Strong Upward Momentum"
+    elif price_change > 0.02:
+        pattern_desc = "Gradual Growth Pattern"
+    elif price_change > -0.02:
+        pattern_desc = "Sideways Consolidation"
+    elif price_change > -0.05:
+        pattern_desc = "Mild Correction Phase"
+    else:
+        pattern_desc = "Bearish Trend Detected"
     
     # LSTM-specific insights
     patterns = ['Bull Market Memory', 'Bear Market Recovery', 'Sideways Consolidation', 'Breakout Pattern']
     pattern = random.choice(patterns)
     
     return {
-        'price': predicted_price,
-        'confidence': confidence,
-        'pattern': pattern,
-        'memory_strength': np.random.uniform(0.7, 0.95),
-        'long_term_trend': 'Bullish' if trend_factor > 1.02 else 'Bearish' if trend_factor < 0.98 else 'Neutral'
+        'price': round(predicted_price, 2),
+        'confidence': round(confidence, 1),
+        'pattern': pattern_desc,
+        'memory_strength': round(pattern['memory_strength'] * 100, 1),
+        'time_horizon': f"{days} days",
+        'trend_factor': round(trend_factor, 3)
     }
 
 async def generate_gru_prediction(symbol, current_price, days):
@@ -454,14 +491,38 @@ async def generate_gru_prediction(symbol, current_price, days):
     
     await asyncio.sleep(0.4)  # Simulate processing time
     
-    # GRU is more efficient, focuses on recent trends
-    recent_trend = np.random.uniform(0.98, 1.06)
-    trend_strength = np.random.uniform(60, 85)
+    # GRU focuses on recent trends and momentum
+    symbol_momentum = {
+        'AAPL': {'recent_trend': 1.02, 'momentum_strength': 0.75},
+        'GOOGL': {'recent_trend': 1.01, 'momentum_strength': 0.68},
+        'MSFT': {'recent_trend': 1.03, 'momentum_strength': 0.82},
+        'TSLA': {'recent_trend': 1.05, 'momentum_strength': 0.90},
+        'AMZN': {'recent_trend': 1.015, 'momentum_strength': 0.72},
+        'NVDA': {'recent_trend': 1.06, 'momentum_strength': 0.88},
+        'META': {'recent_trend': 1.04, 'momentum_strength': 0.78}
+    }
     
-    predicted_price = current_price * (recent_trend ** (days/20))
+    momentum = symbol_momentum.get(symbol, {'recent_trend': 1.02, 'momentum_strength': 0.75})
     
-    directions = ['Strong Uptrend', 'Moderate Uptrend', 'Sideways', 'Moderate Downtrend', 'Strong Downtrend']
-    direction = random.choice(directions)
+    # Apply momentum with time decay
+    time_factor = min(days / 20, 1.0)
+    predicted_price = current_price * (momentum['recent_trend'] ** time_factor)
+    
+    # Dynamic trend strength based on price movement
+    price_change = (predicted_price - current_price) / current_price
+    trend_strength = min(95, 50 + abs(price_change) * 200)
+    
+    # Determine direction based on actual price change
+    if price_change > 0.03:
+        direction = 'Strong Uptrend'
+    elif price_change > 0.01:
+        direction = 'Moderate Uptrend'
+    elif price_change > -0.01:
+        direction = 'Sideways'
+    elif price_change > -0.03:
+        direction = 'Moderate Downtrend'
+    else:
+        direction = 'Strong Downtrend'
     
     return {
         'price': predicted_price,
@@ -476,11 +537,45 @@ async def generate_cnn_prediction(symbol, current_price, days):
     
     await asyncio.sleep(0.6)  # Simulate processing time
     
-    # CNN recognizes chart patterns
-    pattern_factor = np.random.uniform(0.96, 1.07)
-    pattern_match = np.random.uniform(70, 95)
+    # CNN recognizes chart patterns specific to each symbol
+    symbol_patterns = {
+        'AAPL': {'pattern_strength': 0.85, 'breakout_tendency': 0.75, 'support_resistance': 0.80},
+        'GOOGL': {'pattern_strength': 0.78, 'breakout_tendency': 0.68, 'support_resistance': 0.85},
+        'MSFT': {'pattern_strength': 0.88, 'breakout_tendency': 0.72, 'support_resistance': 0.90},
+        'TSLA': {'pattern_strength': 0.70, 'breakout_tendency': 0.95, 'support_resistance': 0.60},
+        'AMZN': {'pattern_strength': 0.82, 'breakout_tendency': 0.70, 'support_resistance': 0.78},
+        'NVDA': {'pattern_strength': 0.75, 'breakout_tendency': 0.88, 'support_resistance': 0.65},
+        'META': {'pattern_strength': 0.73, 'breakout_tendency': 0.80, 'support_resistance': 0.70}
+    }
+    
+    pattern_data = symbol_patterns.get(symbol, {'pattern_strength': 0.80, 'breakout_tendency': 0.75, 'support_resistance': 0.75})
+    
+    # Simulate pattern recognition based on time and symbol characteristics
+    import time
+    pattern_cycle = (time.time() / 3600) % 24  # 24-hour pattern cycle
+    pattern_influence = 0.03 * np.sin(pattern_cycle / 24 * 2 * np.pi)  # ±3% pattern influence
+    
+    base_factor = 1.0 + (pattern_data['breakout_tendency'] - 0.5) * 0.1  # -5% to +5% base
+    pattern_factor = base_factor + pattern_influence
     
     predicted_price = current_price * pattern_factor
+    
+    # Pattern match confidence based on pattern strength
+    pattern_match = pattern_data['pattern_strength'] * 100 + np.random.uniform(-10, 10)
+    pattern_match = max(60, min(95, pattern_match))
+    
+    # Detect pattern type based on price movement
+    price_change = (predicted_price - current_price) / current_price
+    if price_change > 0.04:
+        detected_pattern = "Bullish Breakout"
+    elif price_change > 0.02:
+        detected_pattern = "Ascending Triangle"
+    elif price_change > -0.02:
+        detected_pattern = "Consolidation Range"
+    elif price_change > -0.04:
+        detected_pattern = "Descending Triangle"
+    else:
+        detected_pattern = "Bearish Breakdown"
     
     patterns = ['Head & Shoulders', 'Double Bottom', 'Triangle Breakout', 'Flag Pattern', 'Cup & Handle']
     detected_pattern = random.choice(patterns)
