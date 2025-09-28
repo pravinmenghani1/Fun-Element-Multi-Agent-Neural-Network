@@ -677,6 +677,35 @@ def main():
                 # 💬 INTERACTIVE CHAT WITH AI ADVISOR
                 st.markdown("---")
                 st.markdown("### 💬 Chat with AI Financial Advisor")
+                
+                # LLM Status Indicator
+                col_status, col_refresh = st.columns([3, 1])
+                
+                with col_status:
+                    llm_status = st.session_state.llm_assistant.llm_available
+                    if llm_status:
+                        st.success("🤖 AI Advisor Online - Enhanced responses available!")
+                    else:
+                        st.warning("⚠️ AI Advisor in Basic Mode - Install Ollama for enhanced responses")
+                
+                with col_refresh:
+                    if st.button("🔄 Refresh Status"):
+                        st.session_state.llm_assistant.llm_available = st.session_state.llm_assistant._check_llm_availability()
+                        st.rerun()
+                
+                if not llm_status:
+                    with st.expander("🛠️ How to enable enhanced AI responses"):
+                        st.code("""
+# Install Ollama
+curl -fsSL https://ollama.ai/install.sh | sh
+
+# Download AI model
+ollama pull llama3.1:8b
+
+# Start service
+ollama serve
+                        """)
+                
                 st.info("Ask questions about the predictions, investment strategies, or market analysis!")
                 
                 # Chat interface
