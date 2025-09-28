@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-NEXUS AI Setup Verification Script
+Cloudcognoscente Voyager Setup Verification Script
 Checks if all requirements are properly installed
 """
 
@@ -61,7 +61,7 @@ def check_ollama():
         return False
 
 def main():
-    print("🧠 NEXUS AI - Setup Verification")
+    print("🧠 Cloudcognoscente Voyager - Setup Verification")
     print("=" * 40)
     
     all_good = True
@@ -88,7 +88,7 @@ def main():
     
     print("\n" + "=" * 40)
     if all_good:
-        print("🎉 NEXUS AI is ready to launch!")
+        print("🎉 Cloudcognoscente Voyager is ready to launch!")
         print("\nRun: python launch_nexus.py")
     else:
         print("⚠️  Some requirements missing. Install with:")
