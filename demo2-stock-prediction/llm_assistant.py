@@ -14,27 +14,11 @@ class StockLLMAssistant:
         self.llm_available = self._check_llm_availability()
     
     def _check_llm_availability(self) -> bool:
-        """Check if local LLM is available and working"""
+        """Check if Llama 3.1 8B is available and working"""
         if not self.use_local:
             return False
         try:
-            # First check if Ollama is running
-            response = requests.get("http://localhost:11434/api/tags", timeout=5)
-            if response.status_code != 200:
-                return False
-            
-            # Check if llama3.1:8b model is available
-            models = response.json().get('models', [])
-            model_names = [model.get('name', '') for model in models]
-            
-            # Check for various model names
-            available_models = ['llama3.1:8b', 'llama3.1', 'llama3:8b', 'llama3', 'llama2:7b', 'llama2']
-            has_model = any(model in model_names for model in available_models)
-            
-            if not has_model:
-                return False
-            
-            # Test actual query to ensure it works
+            # Test actual query with Llama 3.1 8B
             test_payload = {
                 "model": "llama3.1:8b",
                 "prompt": "Hello",
@@ -111,31 +95,28 @@ Keep it conversational and under 200 words. Always include appropriate disclaime
         return self._smart_fallback_chat(user_question, market_data)
     
     def _query_ollama(self, prompt: str) -> str:
-        """Query local Ollama LLM with model fallback"""
-        models_to_try = ["llama3.1:8b", "llama3.1", "llama3:8b", "llama3", "llama2:7b", "llama2"]
-        
-        for model in models_to_try:
-            try:
-                payload = {
-                    "model": model,
-                    "prompt": prompt,
-                    "stream": False,
-                    "options": {
-                        "temperature": 0.7,
-                        "top_p": 0.9
-                    }
+        """Query local Ollama LLM with Llama 3.1 8B"""
+        try:
+            payload = {
+                "model": "llama3.1:8b",
+                "prompt": prompt,
+                "stream": False,
+                "options": {
+                    "temperature": 0.7,
+                    "top_p": 0.9
                 }
+            }
+            
+            response = requests.post(self.ollama_url, json=payload, timeout=30)
+            if response.status_code == 200:
+                result = response.json().get('response', '').strip()
+                if result:
+                    return result
+            
+            return "LLM unavailable"
                 
-                response = requests.post(self.ollama_url, json=payload, timeout=30)
-                if response.status_code == 200:
-                    result = response.json().get('response', '').strip()
-                    if result:  # Only return if we got a real response
-                        return result
-                
-            except Exception as e:
-                continue  # Try next model
-        
-        return "LLM unavailable"
+        except Exception as e:
+            return "LLM unavailable"
     
     def _enhanced_fallback_explanation(self, data: Dict[str, Any]) -> str:
         """Enhanced fallback explanation when LLM unavailable"""
