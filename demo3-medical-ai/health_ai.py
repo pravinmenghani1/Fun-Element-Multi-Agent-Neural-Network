@@ -17,6 +17,7 @@ import random
 # Import our custom modules
 from medical_visualizations import *
 from medical_diagnosis_engine import *
+from medical_llm_assistant import MedicalLLMAssistant
 
 def main():
     st.set_page_config(
@@ -25,6 +26,14 @@ def main():
         layout="wide",
         initial_sidebar_state="expanded"
     )
+    
+    # Initialize Medical LLM Assistant
+    if 'medical_llm_assistant' not in st.session_state:
+        st.session_state.medical_llm_assistant = MedicalLLMAssistant(use_local=True)
+    
+    # Ensure llm_available attribute exists (for backward compatibility)
+    if not hasattr(st.session_state.medical_llm_assistant, 'llm_available'):
+        st.session_state.medical_llm_assistant.llm_available = st.session_state.medical_llm_assistant._check_llm_availability()
     
     # Spectacular CSS styling with medical theme
     st.markdown("""
@@ -468,6 +477,37 @@ def main():
                 </div>
                 """, unsafe_allow_html=True)
                 
+                # 🏥 MEDICAL LLM INTELLIGENT EXPLANATION
+                st.markdown("### 🤖 AI Medical Assistant Explanation")
+                
+                # LLM Status Indicator
+                col_status, col_refresh = st.columns([3, 1])
+                
+                with col_status:
+                    llm_status = st.session_state.medical_llm_assistant.llm_available
+                    if llm_status:
+                        st.success("🤖 Medical AI Online - Enhanced explanations available!")
+                    else:
+                        st.warning("⚠️ Medical AI in Basic Mode - Enhanced analysis available with local LLM")
+                
+                with col_refresh:
+                    if st.button("🔄 Refresh Medical AI Status"):
+                        st.session_state.medical_llm_assistant.llm_available = st.session_state.medical_llm_assistant._check_llm_availability()
+                        st.rerun()
+                
+                with st.spinner("🧠 Medical AI is analyzing the diagnosis..."):
+                    diagnosis_data = {
+                        'condition': ensemble['primary_diagnosis'],
+                        'confidence': ensemble['confidence'],
+                        'severity': ensemble['severity'],
+                        'location': 'General assessment',
+                        'risk_level': ensemble['severity'],
+                        'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    }
+                    
+                    medical_explanation = st.session_state.medical_llm_assistant.explain_diagnosis(diagnosis_data)
+                    st.info(medical_explanation)
+                
                 # AI doctor breakdown
                 available_tabs = []
                 if 'fnn' in diagnoses:
@@ -548,6 +588,47 @@ def main():
                     - **⚠️ Remember:** This is educational only - consult real doctors!
                     - **✨ Where AI Meets Medicine!**
                     """)
+                
+                # 💬 INTERACTIVE MEDICAL CHAT
+                st.markdown("---")
+                st.markdown("### 💬 Chat with Medical AI Assistant")
+                st.info("Ask questions about the diagnosis, symptoms, or general health information!")
+                
+                # Medical chat interface
+                if 'medical_chat_history' not in st.session_state:
+                    st.session_state.medical_chat_history = []
+                
+                user_medical_question = st.text_input("💭 Ask your medical question:", 
+                                                    placeholder="e.g., What does this diagnosis mean? What should I do next?")
+                
+                if st.button("🩺 Ask Medical AI") and user_medical_question:
+                    with st.spinner("🧠 Medical AI is analyzing your question..."):
+                        medical_context = {
+                            'diagnosis': ensemble['primary_diagnosis'],
+                            'confidence': ensemble['confidence'],
+                            'severity': ensemble['severity'],
+                            'symptoms': symptoms_list if 'symptoms_list' in locals() else []
+                        }
+                        
+                        ai_medical_response = st.session_state.medical_llm_assistant.chat_response(user_medical_question, medical_context)
+                        
+                        # Add to medical chat history
+                        st.session_state.medical_chat_history.append({
+                            "user": user_medical_question, 
+                            "ai": ai_medical_response
+                        })
+                
+                # Display medical chat history
+                if st.session_state.medical_chat_history:
+                    st.markdown("#### 💬 Medical Consultation History")
+                    for i, chat in enumerate(reversed(st.session_state.medical_chat_history[-3:])):  # Show last 3 exchanges
+                        st.markdown(f"**You:** {chat['user']}")
+                        st.markdown(f"**🩺 Medical AI:** {chat['ai']}")
+                        if i < len(st.session_state.medical_chat_history[-3:]) - 1:
+                            st.markdown("---")
+                
+                # Medical disclaimer for chat
+                st.warning("⚠️ **Medical Disclaimer:** This AI chat is for educational purposes only. Always consult qualified healthcare professionals for medical advice, diagnosis, and treatment.")
     
     # Footer with signature
     st.markdown("---")
