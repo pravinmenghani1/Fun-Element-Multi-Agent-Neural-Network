@@ -109,14 +109,14 @@ def create_neural_learning_animation():
         x=epochs,
         y=ensemble_accuracy,
         mode='lines+markers',
-        name='🤖 ARIA Ensemble',
+        name='🤖 Cloudcognoscente Ensemble',
         line=dict(color='red', width=4, dash='dash'),
         marker=dict(size=10, symbol='star'),
-        hovertemplate="<b>ARIA Ensemble</b><br>Epoch: %{x}<br>Accuracy: %{y}%<extra></extra>"
+        hovertemplate="<b>Cloudcognoscente Ensemble</b><br>Epoch: %{x}<br>Accuracy: %{y}%<extra></extra>"
     ))
     
     fig.update_layout(
-        title="🧠 ARIA's Neural Networks Learning in Real-Time",
+        title="🧠 Cloudcognoscente Voyager's Neural Networks Learning in Real-Time",
         xaxis_title="Training Epochs",
         yaxis_title="Accuracy (%)",
         height=400,
@@ -208,7 +208,7 @@ def create_ai_decision_tree():
         ))
     
     fig.update_layout(
-        title="🤖 ARIA's AI Decision-Making Process",
+        title="🤖 Cloudcognoscente Voyager's AI Decision-Making Process",
         xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
         yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
         height=500,
@@ -497,7 +497,7 @@ def create_3d_agent_network():
     
     # Enhanced layout with better camera angle
     fig.update_layout(
-        title="🌐 NEXUS AI - 3D Multi-Agent Network Architecture",
+        title="🌐 Cloudcognoscente Voyager - 3D Multi-Agent Network Architecture",
         scene=dict(
             xaxis=dict(title="X Axis", showgrid=True, gridcolor='lightgray'),
             yaxis=dict(title="Y Axis", showgrid=True, gridcolor='lightgray'),
@@ -657,9 +657,9 @@ def generate_day_insight(day_num, activity_level):
     """Generate AI insights for each day"""
     
     insights = {
-        0: f"🤖 ARIA's Insight: Perfect arrival day balance - not too rushed, sets the tone for your {activity_level.lower()} adventure!",
-        1: f"🤖 ARIA's Insight: Peak experience day! I've optimized this for your {activity_level.lower()} preference with perfect pacing.",
-        2: f"🤖 ARIA's Insight: Gentle conclusion - leaving you refreshed and with beautiful memories to take home."
+        0: f"🤖 Cloudcognoscente Voyager's Insight: Perfect arrival day balance - not too rushed, sets the tone for your {activity_level.lower()} adventure!",
+        1: f"🤖 Cloudcognoscente Voyager's Insight: Peak experience day! I've optimized this for your {activity_level.lower()} preference with perfect pacing.",
+        2: f"🤖 Cloudcognoscente Voyager's Insight: Gentle conclusion - leaving you refreshed and with beautiful memories to take home."
     }
     
     return insights[day_num]
@@ -781,6 +781,9 @@ def main():
         <h1>🌟 Cloudcognoscente Voyager</h1>
         <h2>🧠 Where Intelligence Meets Exploration</h2>
         <p>✨ Multi-Agent Neural Architecture • Real-time Learning • Intelligent Discovery ✨</p>
+        <p style="font-size: 14px; margin-top: 10px; opacity: 0.9;">
+            Built by <strong>Pravin Menghani</strong>, in love ❤️ with Neural Networks!!
+        </p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -846,7 +849,7 @@ def main():
         elif concept_tab == "🧠 Neural Learning Animation":
             st.plotly_chart(create_neural_learning_animation(), use_container_width=True)
             st.markdown("""
-            **🧠 Watch ARIA Learn in Real-Time!**
+            **🧠 Watch Cloudcognoscente Voyager Learn in Real-Time!**
             
             **What you're seeing:**
             - Each agent improving accuracy over training epochs
@@ -858,13 +861,13 @@ def main():
             - Demonstrates why ensemble methods work better
             - Real visualization of machine learning in action!
             
-            **🚀 The red dashed line shows ARIA's ensemble intelligence - always better than individual agents!**
+            **🚀 The red dashed line shows Cloudcognoscente Voyager's ensemble intelligence - always better than individual agents!**
             """)
         
         elif concept_tab == "🤖 AI Decision Tree":
             st.plotly_chart(create_ai_decision_tree(), use_container_width=True)
             st.markdown("""
-            **🤖 ARIA's Decision-Making Process**
+            **🤖 Cloudcognoscente Voyager's Decision-Making Process**
             
             **Step-by-step AI reasoning:**
             1. **Budget Analysis** - Determines spending strategy
@@ -878,7 +881,7 @@ def main():
             - **Specialized agents** - Expert knowledge in each domain
             - **Ensemble intelligence** - Better than any single AI
             
-            **🎯 This is how ARIA thinks - like having 4 travel experts working together!**
+            **🎯 This is how Cloudcognoscente Voyager thinks - like having 4 travel experts working together!**
             """)
         
         elif concept_tab == "🔄 Real-time API Monitor":
@@ -1071,7 +1074,7 @@ def main():
                 results, ai_recommendations, flight_results = st.session_state.spectacular_results
                 
                 # NEW WOW FACTOR: AI Recommendation System with Personality
-                st.markdown("### 🤖 ARIA's Personal Recommendations")
+                st.markdown("### 🤖 Cloudcognoscente Voyager's Personal Recommendations")
                 
                 aria_recommendations = create_ai_recommendation_system(st.session_state.travel_request, results)
                 
@@ -1086,7 +1089,7 @@ def main():
                 """, unsafe_allow_html=True)
                 
                 # AI-Generated Personalized Itinerary
-                with st.expander("🎯 ARIA's Personalized Day-by-Day Itinerary", expanded=True):
+                with st.expander("🎯 Cloudcognoscente Voyager's Personalized Day-by-Day Itinerary", expanded=True):
                     st.markdown(f"**{aria_recommendations['personalized_itinerary']['ai_reasoning']}**")
                     
                     for day_plan in aria_recommendations['personalized_itinerary']['day_by_day']:
@@ -1110,14 +1113,14 @@ def main():
                         st.markdown("---")
                 
                 # AI Timing Recommendations
-                with st.expander("⏰ ARIA's Optimal Timing Analysis", expanded=False):
+                with st.expander("⏰ Cloudcognoscente Voyager's Optimal Timing Analysis", expanded=False):
                     timing = aria_recommendations['optimal_timing']
                     st.write(f"**Departure Analysis:** {timing['departure_analysis']}")
                     st.write(f"**Seasonal Insights:** {timing['seasonal_insights']}")
                     st.write(f"**Booking Advice:** {timing['best_booking_time']}")
                 
                 # AI Pro Tips
-                with st.expander("💡 ARIA's Pro Tips", expanded=False):
+                with st.expander("💡 Cloudcognoscente Voyager's Pro Tips", expanded=False):
                     for tip in aria_recommendations['pro_tips']:
                         st.write(f"• {tip}")
                 
@@ -1271,6 +1274,23 @@ def main():
                     - **🏛️ Local Attraction APIs:** Tourism Board, Places API, TripAdvisor integration
                     - **✨ Personalized Intelligence:** Where Intelligence Meets Exploration!
                     """)
+    
+    # Footer with signature
+    st.markdown("---")
+    st.markdown("""
+    <div style="text-align: center; padding: 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                border-radius: 15px; color: white; margin-top: 2rem;">
+        <h3>🌟 Cloudcognoscente Voyager</h3>
+        <p><strong>Where Intelligence Meets Exploration</strong></p>
+        <p style="margin-top: 1rem; font-size: 16px;">
+            Built with ❤️ by <strong>Pravin Menghani</strong><br>
+            In love with Neural Networks!!
+        </p>
+        <p style="font-size: 14px; opacity: 0.9; margin-top: 1rem;">
+            🧠 Multi-Agent AI • 🌐 Real-time APIs • ✨ Intelligent Discovery
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
