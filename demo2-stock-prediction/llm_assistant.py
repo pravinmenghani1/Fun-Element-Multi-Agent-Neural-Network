@@ -11,22 +11,30 @@ class StockLLMAssistant:
     def __init__(self, use_local=True):
         self.use_local = use_local
         self.ollama_url = "http://localhost:11434/api/generate"
+        self.active_model = "llama3.2:latest"  # Default model
         self.llm_available = self._check_llm_availability()
     
     def _check_llm_availability(self) -> bool:
-        """Check if Llama 3.1 8B is available and working"""
+        """Check if Llama model is available and working"""
         if not self.use_local:
             return False
         try:
-            # Test actual query with Llama 3.1 8B
-            test_payload = {
-                "model": "llama3.1:8b",
-                "prompt": "Hello",
-                "stream": False
-            }
+            # Try available models in order of preference
+            models_to_test = ["llama3.2:latest", "llama3.2", "mistral:latest", "deepseek-r1:1.5b"]
             
-            test_response = requests.post(self.ollama_url, json=test_payload, timeout=10)
-            return test_response.status_code == 200 and test_response.json().get('response')
+            for model in models_to_test:
+                test_payload = {
+                    "model": model,
+                    "prompt": "Hello",
+                    "stream": False
+                }
+                
+                test_response = requests.post(self.ollama_url, json=test_payload, timeout=10)
+                if test_response.status_code == 200 and test_response.json().get('response'):
+                    self.active_model = model  # Store the working model
+                    return True
+            
+            return False
             
         except Exception as e:
             return False
@@ -95,10 +103,10 @@ Keep it conversational and under 200 words. Always include appropriate disclaime
         return self._smart_fallback_chat(user_question, market_data)
     
     def _query_ollama(self, prompt: str) -> str:
-        """Query local Ollama LLM with Llama 3.1 8B"""
+        """Query local Ollama LLM with detected model"""
         try:
             payload = {
-                "model": "llama3.1:8b",
+                "model": getattr(self, 'active_model', 'llama3.2:latest'),
                 "prompt": prompt,
                 "stream": False,
                 "options": {
