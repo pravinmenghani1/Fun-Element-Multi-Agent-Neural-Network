@@ -18,6 +18,7 @@ import random
 # Import our custom modules
 from neural_visualizations import *
 from prediction_engine import *
+from llm_assistant import StockLLMAssistant
 
 def main():
     st.set_page_config(
@@ -26,6 +27,10 @@ def main():
         layout="wide",
         initial_sidebar_state="expanded"
     )
+    
+    # Initialize LLM Assistant
+    if 'llm_assistant' not in st.session_state:
+        st.session_state.llm_assistant = StockLLMAssistant(use_local=True)
     
     # Spectacular CSS styling with tooltips
     st.markdown("""
@@ -539,6 +544,21 @@ def main():
                 </div>
                 """, unsafe_allow_html=True)
                 
+                # 🤖 LLM INTELLIGENT EXPLANATION
+                st.markdown("### 🤖 AI Financial Advisor Explanation")
+                with st.spinner("🧠 AI is analyzing the predictions..."):
+                    prediction_data = {
+                        'price': ensemble['predicted_price'],
+                        'confidence': ensemble['confidence'] / 100,
+                        'trend': 'bullish' if ensemble['expected_return'] > 0 else 'bearish' if ensemble['expected_return'] < -2 else 'neutral',
+                        'volatility': 'high' if abs(ensemble['expected_return']) > 10 else 'moderate' if abs(ensemble['expected_return']) > 5 else 'low',
+                        'risk': request['risk'].lower(),
+                        'expected_return': ensemble['expected_return']
+                    }
+                    
+                    llm_explanation = st.session_state.llm_assistant.explain_prediction(prediction_data)
+                    st.info(llm_explanation)
+                
                 # Neural network breakdown
                 available_tabs = []
                 if 'lstm' in predictions:
@@ -653,6 +673,45 @@ def main():
                     - **🎯 Confidence:** {ensemble['confidence']:.1f}% prediction accuracy
                     - **✨ Where AI Meets Wall Street!**
                     """)
+                
+                # 💬 INTERACTIVE CHAT WITH AI ADVISOR
+                st.markdown("---")
+                st.markdown("### 💬 Chat with AI Financial Advisor")
+                st.info("Ask questions about the predictions, investment strategies, or market analysis!")
+                
+                # Chat interface
+                if 'chat_history' not in st.session_state:
+                    st.session_state.chat_history = []
+                
+                user_question = st.text_input("💭 Ask your question:", placeholder="e.g., What's the risk if I invest $50k? Should I buy now?")
+                
+                if st.button("🤖 Ask AI Advisor") and user_question:
+                    with st.spinner("🧠 AI is thinking..."):
+                        market_data = {
+                            'symbol': request['symbol'],
+                            'company': request['company'],
+                            'predicted_price': ensemble['predicted_price'],
+                            'current_price': ensemble['current_price'],
+                            'expected_return': ensemble['expected_return'],
+                            'confidence': ensemble['confidence'],
+                            'investment_amount': request['investment'],
+                            'risk_tolerance': request['risk'],
+                            'prediction_days': request['days']
+                        }
+                        
+                        ai_response = st.session_state.llm_assistant.chat_response(user_question, market_data)
+                        
+                        # Add to chat history
+                        st.session_state.chat_history.append({"user": user_question, "ai": ai_response})
+                
+                # Display chat history
+                if st.session_state.chat_history:
+                    st.markdown("#### 💬 Conversation History")
+                    for i, chat in enumerate(reversed(st.session_state.chat_history[-3:])):  # Show last 3 exchanges
+                        st.markdown(f"**You:** {chat['user']}")
+                        st.markdown(f"**🤖 AI Advisor:** {chat['ai']}")
+                        if i < len(st.session_state.chat_history[-3:]) - 1:
+                            st.markdown("---")
     
     # Footer with signature
     st.markdown("---")
