@@ -155,6 +155,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **🤖 Explore the future of AI with Fun Element Multi-Agent Neural Network!** 🚀🧠
 
-### 📞 Support
+### 📞 Contact & Support
+
+#### 👨‍💻 Author
+- **Website:** [https://cloudcognoscente.com](https://cloudcognoscente.com)
+- **LinkedIn:** [Pravinkumar M](https://www.linkedin.com/in/pravinkumar-m-5922527/) | [Cloudcognoscente Pune](https://www.linkedin.com/in/cloudcongnoscente-pune-43b94b20a/)
+- **Email:** pravinmenghani@gmail.com
+
+#### 🆘 Support
 - **Issues:** [GitHub Issues](https://github.com/pravinmenghani1/Fun-Element-Multi-Agent-Neural-Network/issues)
 - **Discussions:** [GitHub Discussions](https://github.com/pravinmenghani1/Fun-Element-Multi-Agent-Neural-Network/discussions)
