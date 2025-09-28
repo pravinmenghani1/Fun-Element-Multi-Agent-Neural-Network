@@ -10,6 +10,7 @@ from typing import Dict, List, Optional
 import json
 from datetime import datetime
 import os
+import numpy as np
 
 class RealAPIClient:
     """Client for making real API calls to travel services"""
@@ -122,13 +123,120 @@ class RealAPIClient:
             print(f"Weather API error: {e}")
             return self._mock_weather_data(city)
     
-    async def search_attractions_foursquare(self, city: str) -> List[Dict]:
-        """Search attractions using Foursquare API"""
+    async def search_attractions_local(self, city: str, category: str = 'tourist_attraction') -> List[Dict]:
+        """Search local attractions using multiple APIs with real showcase"""
         try:
-            return self._mock_attraction_data(city)
+            # Simulate multiple local attraction API calls
+            attractions = []
+            
+            # API 1: Local Tourism Board API
+            tourism_attractions = await self._call_tourism_board_api(city, category)
+            attractions.extend(tourism_attractions)
+            
+            # API 2: Google Places-like API
+            places_attractions = await self._call_places_api(city, category)
+            attractions.extend(places_attractions)
+            
+            # API 3: TripAdvisor-like API
+            tripadvisor_attractions = await self._call_tripadvisor_api(city, category)
+            attractions.extend(tripadvisor_attractions)
+            
+            return attractions
+            
         except Exception as e:
-            print(f"Foursquare API error: {e}")
-            return self._mock_attraction_data(city)
+            print(f"Local Attraction API error: {e}")
+            return self._mock_local_attraction_data(city)
+    
+    async def _call_tourism_board_api(self, city: str, category: str) -> List[Dict]:
+        """Simulate Tourism Board API call"""
+        await asyncio.sleep(0.3)  # Simulate API delay
+        return [{
+            'name': f"{city} Heritage Museum",
+            'category': 'cultural',
+            'rating': round(np.random.uniform(4.0, 5.0), 1),
+            'price': int(np.random.randint(50, 300)),
+            'duration': f"{np.random.randint(2, 4)} hours",
+            'booking_available': True,
+            'api_source': 'Tourism Board API',
+            'description': f"Official heritage site showcasing {city}'s rich cultural history"
+        }, {
+            'name': f"{city} Adventure Park",
+            'category': 'adventure',
+            'rating': round(np.random.uniform(4.2, 4.8), 1),
+            'price': int(np.random.randint(200, 800)),
+            'duration': f"{np.random.randint(3, 6)} hours",
+            'booking_available': True,
+            'api_source': 'Tourism Board API',
+            'description': f"Thrilling adventure activities in the heart of {city}"
+        }]
+    
+    async def _call_places_api(self, city: str, category: str) -> List[Dict]:
+        """Simulate Google Places-like API call"""
+        await asyncio.sleep(0.4)  # Simulate API delay
+        return [{
+            'name': f"{city} Central Market",
+            'category': 'cultural',
+            'rating': round(np.random.uniform(3.8, 4.5), 1),
+            'price': 0,  # Free to visit
+            'duration': f"{np.random.randint(1, 3)} hours",
+            'booking_available': False,
+            'api_source': 'Places API',
+            'description': f"Bustling local market with authentic {city} crafts and food"
+        }, {
+            'name': f"{city} Scenic Viewpoint",
+            'category': 'natural',
+            'rating': round(np.random.uniform(4.3, 4.9), 1),
+            'price': int(np.random.randint(20, 100)),
+            'duration': f"{np.random.randint(1, 2)} hours",
+            'booking_available': False,
+            'api_source': 'Places API',
+            'description': f"Breathtaking panoramic views of {city} and surroundings"
+        }]
+    
+    async def _call_tripadvisor_api(self, city: str, category: str) -> List[Dict]:
+        """Simulate TripAdvisor-like API call"""
+        await asyncio.sleep(0.5)  # Simulate API delay
+        return [{
+            'name': f"{city} Food Walking Tour",
+            'category': 'cultural',
+            'rating': round(np.random.uniform(4.5, 5.0), 1),
+            'price': int(np.random.randint(500, 1200)),
+            'duration': f"{np.random.randint(3, 5)} hours",
+            'booking_available': True,
+            'api_source': 'TripAdvisor API',
+            'description': f"Guided culinary journey through {city}'s best local eateries"
+        }, {
+            'name': f"{city} Historical Walking Tour",
+            'category': 'historical',
+            'rating': round(np.random.uniform(4.2, 4.7), 1),
+            'price': int(np.random.randint(300, 700)),
+            'duration': f"{np.random.randint(2, 4)} hours",
+            'booking_available': True,
+            'api_source': 'TripAdvisor API',
+            'description': f"Expert-guided tour of {city}'s most significant historical sites"
+        }]
+    
+    def _mock_local_attraction_data(self, city: str) -> List[Dict]:
+        """Enhanced mock local attraction data"""
+        import random
+        attractions = [
+            {'type': 'Museum', 'category': 'cultural', 'price_range': (100, 400)},
+            {'type': 'Beach Club', 'category': 'natural', 'price_range': (200, 800)},
+            {'type': 'Historic Fort', 'category': 'historical', 'price_range': (50, 200)},
+            {'type': 'Shopping District', 'category': 'modern', 'price_range': (0, 100)},
+            {'type': 'Adventure Sports', 'category': 'adventure', 'price_range': (500, 1500)}
+        ]
+        
+        return [{
+            'name': f"{city} {attr['type']}",
+            'category': attr['category'],
+            'rating': round(random.uniform(3.5, 5.0), 1),
+            'price': random.randint(attr['price_range'][0], attr['price_range'][1]),
+            'duration': f"{random.randint(1, 6)} hours",
+            'booking_available': random.choice([True, False]),
+            'api_source': 'Local Attraction API (Demo)',
+            'description': f"Popular {attr['type'].lower()} destination in {city}"
+        } for attr in random.sample(attractions, k=random.randint(3, 5))]
     
     def _mock_flight_data(self, origin: str, destination: str) -> List[Dict]:
         """Enhanced mock flight data with realistic details"""

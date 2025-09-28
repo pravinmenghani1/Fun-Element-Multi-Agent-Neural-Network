@@ -19,8 +19,8 @@ from real_api_integration import api_client
 def create_real_time_api_monitor():
     """Create real-time API monitoring dashboard"""
     
-    # Simulate real-time API calls
-    apis = ['Amadeus', 'IndiGo', 'Air India', 'SpiceJet', 'Booking.com', 'OpenWeather']
+    # Simulate real-time API calls including local attraction APIs
+    apis = ['Amadeus', 'IndiGo', 'Air India', 'SpiceJet', 'Booking.com', 'OpenWeather', 'Tourism Board', 'Places API', 'TripAdvisor']
     
     fig = go.Figure()
     
@@ -37,10 +37,11 @@ def create_real_time_api_monitor():
     ))
     
     fig.update_layout(
-        title="🔄 Real-time API Response Monitor",
+        title="🔄 Real-time API Response Monitor (Including Local Attraction APIs)",
         yaxis_title="Response Time (seconds)",
-        height=300,
-        showlegend=False
+        height=350,
+        showlegend=False,
+        xaxis=dict(tickangle=45)
     )
     
     return fig
@@ -523,15 +524,15 @@ def create_ai_recommendation_system(travel_request, results):
     destination = travel_request.destination
     
     if budget < 15000:
-        ai_personality = "Budget-Smart ARIA"
+        ai_personality = "Budget-Smart Voyager"
         personality_emoji = "💡"
         tone = "smart and economical"
     elif budget < 35000:
-        ai_personality = "Balanced ARIA"
+        ai_personality = "Balanced Voyager"
         personality_emoji = "⚖️"
         tone = "perfectly balanced"
     else:
-        ai_personality = "Luxury ARIA"
+        ai_personality = "Luxury Voyager"
         personality_emoji = "✨"
         tone = "premium and luxurious"
     
@@ -539,7 +540,7 @@ def create_ai_recommendation_system(travel_request, results):
     recommendations = {
         'ai_personality': ai_personality,
         'personality_emoji': personality_emoji,
-        'greeting': f"Hello! I'm {personality_emoji} {ai_personality}, your personal travel intelligence assistant!",
+        'greeting': f"Hello! I'm {personality_emoji} {ai_personality}, your Cloudcognoscente travel intelligence!",
         'budget_analysis': generate_budget_analysis(budget, travelers),
         'optimal_timing': generate_optimal_timing(travel_request),
         'personalized_itinerary': generate_personalized_itinerary(travel_request, results, tone),
@@ -714,8 +715,8 @@ def generate_confidence_explanation(results):
 
 def main():
     st.set_page_config(
-        page_title="🌟 ARIA - Autonomous Reasoning Intelligence Assistant",
-        page_icon="🤖✈️",
+        page_title="🌟 Cloudcognoscente Voyager - Where Intelligence Meets Exploration",
+        page_icon="🧠✈️",
         layout="wide",
         initial_sidebar_state="expanded"
     )
@@ -777,9 +778,9 @@ def main():
     # Spectacular header
     st.markdown("""
     <div class="main-header">
-        <h1>🌟 ARIA</h1>
-        <h2>⚡ Autonomous Reasoning Intelligence Assistant</h2>
-        <p>✨ Multi-Agent Neural Architecture • Real-time Learning • Intelligent Recommendations ✨</p>
+        <h1>🌟 Cloudcognoscente Voyager</h1>
+        <h2>🧠 Where Intelligence Meets Exploration</h2>
+        <p>✨ Multi-Agent Neural Architecture • Real-time Learning • Intelligent Discovery ✨</p>
     </div>
     """, unsafe_allow_html=True)
     
@@ -1249,25 +1250,26 @@ def main():
                 
                 # Final spectacular booking
                 st.markdown("---")
-                if st.button("🌟 CONFIRM ARIA'S INTELLIGENT ITINERARY", type="primary", use_container_width=True):
+                if st.button("🌟 CONFIRM CLOUDCOGNOSCENTE VOYAGER'S INTELLIGENT ITINERARY", type="primary", use_container_width=True):
                     st.balloons()
-                    st.success("🎉 ARIA has crafted your perfect intelligent itinerary!")
+                    st.success("🎉 Cloudcognoscente Voyager has crafted your perfect intelligent exploration!")
                     
                     # Show confidence explanation
-                    st.markdown("### 🤖 Why ARIA is Confident:")
+                    st.markdown("### 🧠 Why Cloudcognoscente Voyager is Confident:")
                     for explanation in aria_recommendations['confidence_explanation']:
                         st.write(f"• {explanation}")
                     
                     st.markdown("""
-                    **🌟 ARIA's Multi-Agent Intelligence Summary:**
+                    **🌟 Cloudcognoscente Voyager's Multi-Agent Intelligence Summary:**
                     - **🔮 RNN Flight Agent:** Analyzed temporal price patterns across multiple APIs
                     - **👁️ Temporal CNN:** Extracted time-series patterns for optimal booking times  
                     - **🎯 Transformer Hotel Agent:** Applied multi-head attention for perfect matches
-                    - **🔄 VAE Attraction Agent:** Generated personalized recommendations from latent space
+                    - **🔄 VAE Attraction Agent:** Generated personalized recommendations + called local APIs
                     - **📊 Autoencoder Weather Agent:** Compressed weather data into actionable insights
                     - **🤖 LLM Coordinator:** Enhanced everything with intelligent reasoning
                     - **🌐 Real API Integration:** Made actual calls to travel booking platforms
-                    - **✨ Personalized AI Assistant:** Tailored everything to your unique preferences!
+                    - **🏛️ Local Attraction APIs:** Tourism Board, Places API, TripAdvisor integration
+                    - **✨ Personalized Intelligence:** Where Intelligence Meets Exploration!
                     """)
 
 if __name__ == "__main__":

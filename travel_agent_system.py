@@ -175,7 +175,10 @@ class AttractionAgent(BaseAgent):
         super().__init__("AttractionAgent", "llama3.2:latest")
     
     async def process(self, travel_request: TravelRequest) -> Dict:
-        """Process attractions using VAE-like encoding/decoding"""
+        """Process attractions using VAE-like encoding/decoding with real API calls"""
+        
+        # Import here to avoid circular imports
+        from real_api_integration import api_client
         
         # Encode destination into latent space (categories)
         encoded_preferences = self._encode_destination(travel_request.destination)
@@ -183,15 +186,34 @@ class AttractionAgent(BaseAgent):
         # Sample from latent space (generate attraction categories)
         attraction_categories = self._sample_attractions(encoded_preferences)
         
-        # Decode back to actual attractions
-        attractions = self._decode_attractions(attraction_categories, travel_request)
+        # NEW: Call local attraction APIs
+        api_attractions = await api_client.search_attractions_local(
+            travel_request.destination, 
+            attraction_categories[0] if attraction_categories else 'tourist_attraction'
+        )
         
-        self.add_to_memory({'attractions_found': len(attractions)})
+        # Decode back to actual attractions (combine API + generated)
+        generated_attractions = self._decode_attractions(attraction_categories, travel_request)
+        
+        # Combine API results with VAE-generated attractions
+        all_attractions = api_attractions + generated_attractions
+        
+        # Remove duplicates and limit results
+        unique_attractions = []
+        seen_names = set()
+        for attraction in all_attractions:
+            if attraction['name'] not in seen_names:
+                unique_attractions.append(attraction)
+                seen_names.add(attraction['name'])
+        
+        self.add_to_memory({'attractions_found': len(unique_attractions), 'api_calls': len(api_attractions)})
         
         return {
             'agent': self.name,
-            'attractions': attractions,
-            'categories': attraction_categories
+            'attractions': unique_attractions[:8],  # Top 8 results
+            'categories': attraction_categories,
+            'api_sources': list(set([attr.get('api_source', 'Generated') for attr in unique_attractions])),
+            'api_count': len(api_attractions)
         }
     
     def _encode_destination(self, destination: str) -> Dict:
