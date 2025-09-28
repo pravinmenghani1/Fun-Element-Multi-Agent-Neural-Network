@@ -649,14 +649,38 @@ def main():
                     st.plotly_chart(create_ensemble_decision_chart(ensemble), use_container_width=True)
                     
                     st.markdown("### 🎯 Investment Recommendation")
-                    if ensemble['expected_return'] > 10:
-                        st.success(f"🚀 STRONG BUY: Expected {ensemble['expected_return']:.1f}% return!")
-                    elif ensemble['expected_return'] > 5:
-                        st.info(f"📈 BUY: Moderate {ensemble['expected_return']:.1f}% return expected")
-                    elif ensemble['expected_return'] > 0:
-                        st.warning(f"⚖️ HOLD: Small {ensemble['expected_return']:.1f}% return expected")
+                    
+                    # Dynamic recommendation based on return AND confidence
+                    return_pct = ensemble['expected_return']
+                    confidence = ensemble['confidence']
+                    
+                    # Calculate recommendation strength
+                    if return_pct > 15 and confidence > 85:
+                        st.success(f"🚀 STRONG BUY: Exceptional {return_pct:.1f}% return with {confidence:.0f}% confidence!")
+                    elif return_pct > 10 and confidence > 75:
+                        st.success(f"📈 BUY: Strong {return_pct:.1f}% return expected (High confidence: {confidence:.0f}%)")
+                    elif return_pct > 7 and confidence > 70:
+                        st.info(f"💰 BUY: Good {return_pct:.1f}% return potential (Confidence: {confidence:.0f}%)")
+                    elif return_pct > 3 and confidence > 60:
+                        st.info(f"📊 MODERATE BUY: Decent {return_pct:.1f}% return expected (Confidence: {confidence:.0f}%)")
+                    elif return_pct > 0 and confidence > 50:
+                        st.warning(f"⚖️ HOLD: Small {return_pct:.1f}% return, moderate confidence ({confidence:.0f}%)")
+                    elif return_pct > 0 and confidence <= 50:
+                        st.warning(f"⚠️ HOLD: {return_pct:.1f}% return but low confidence ({confidence:.0f}%) - Wait for better signals")
+                    elif return_pct > -3 and confidence > 60:
+                        st.warning(f"⚖️ HOLD: Minor loss expected ({return_pct:.1f}%), consider waiting")
+                    elif return_pct > -7:
+                        st.error(f"📉 SELL: Moderate loss predicted ({return_pct:.1f}%)")
                     else:
-                        st.error(f"📉 SELL: Negative {ensemble['expected_return']:.1f}% return predicted")
+                        st.error(f"🔴 STRONG SELL: Significant loss expected ({return_pct:.1f}%)")
+                    
+                    # Add confidence indicator
+                    if confidence > 80:
+                        st.success(f"🎯 High Confidence Signal: {confidence:.0f}%")
+                    elif confidence > 60:
+                        st.info(f"⚖️ Moderate Confidence: {confidence:.0f}%")
+                    else:
+                        st.warning(f"⚠️ Low Confidence: {confidence:.0f}% - Use caution")
                 
                 # Final action button
                 st.markdown("---")
