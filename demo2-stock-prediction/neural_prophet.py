@@ -32,6 +32,10 @@ def main():
     if 'llm_assistant' not in st.session_state:
         st.session_state.llm_assistant = StockLLMAssistant(use_local=True)
     
+    # Ensure llm_available attribute exists (for backward compatibility)
+    if not hasattr(st.session_state.llm_assistant, 'llm_available'):
+        st.session_state.llm_assistant.llm_available = st.session_state.llm_assistant._check_llm_availability()
+    
     # Spectacular CSS styling with tooltips
     st.markdown("""
     <style>
