@@ -265,52 +265,82 @@ def create_rnn_sequence_analysis():
     return fig
 
 def create_3d_agent_network():
-    """Create 3D visualization of agent network"""
+    """Create enhanced 3D visualization of agent network"""
     
-    # Agent positions in 3D space
+    # Enhanced agent positions in 3D space for better visibility
     agents = {
-        'Coordinator': (0, 0, 2),
-        'Flight (RNN)': (-2, -2, 0),
-        'Hotel (Transformer)': (2, -2, 0),
-        'Attraction (VAE)': (-2, 2, 0),
-        'Weather (Autoencoder)': (2, 2, 0),
+        'Coordinator': (0, 0, 3),
+        'Flight (RNN+CNN)': (-3, -3, 1),
+        'Hotel (Transformer)': (3, -3, 1),
+        'Attraction (VAE)': (-3, 3, 1),
+        'Weather (Autoencoder)': (3, 3, 1),
         'LLM Enhancer': (0, 0, -1)
+    }
+    
+    # Color coding for different agent types
+    agent_colors = {
+        'Coordinator': 'red',
+        'Flight (RNN+CNN)': 'blue',
+        'Hotel (Transformer)': 'green',
+        'Attraction (VAE)': 'orange',
+        'Weather (Autoencoder)': 'purple',
+        'LLM Enhancer': 'gold'
     }
     
     fig = go.Figure()
     
-    # Add agent nodes
+    # Add agent nodes with enhanced styling
     for agent, (x, y, z) in agents.items():
         fig.add_trace(go.Scatter3d(
             x=[x], y=[y], z=[z],
             mode='markers+text',
-            marker=dict(size=15, color='red' if agent == 'Coordinator' else 'blue'),
+            marker=dict(
+                size=20 if agent == 'Coordinator' else 15,
+                color=agent_colors[agent],
+                opacity=0.8,
+                line=dict(width=2, color='white')
+            ),
             text=[agent],
             textposition='top center',
-            name=agent
+            textfont=dict(size=10, color='black'),
+            name=agent,
+            hovertemplate=f"<b>{agent}</b><br>Position: ({x}, {y}, {z})<extra></extra>"
         ))
     
-    # Add connections
+    # Add enhanced connections with different styles
     coordinator_pos = agents['Coordinator']
     for agent, pos in agents.items():
         if agent != 'Coordinator':
+            # Different line styles for different connections
+            line_color = 'lightblue' if 'LLM' not in agent else 'gold'
+            line_width = 4 if 'LLM' in agent else 3
+            
             fig.add_trace(go.Scatter3d(
                 x=[coordinator_pos[0], pos[0]],
                 y=[coordinator_pos[1], pos[1]],
                 z=[coordinator_pos[2], pos[2]],
                 mode='lines',
-                line=dict(color='lightblue', width=3),
-                showlegend=False
+                line=dict(color=line_color, width=line_width),
+                showlegend=False,
+                hoverinfo='skip'
             ))
     
+    # Enhanced layout with better camera angle
     fig.update_layout(
-        title="🌐 3D Multi-Agent Network Architecture",
+        title="🌐 NEXUS AI - 3D Multi-Agent Network Architecture",
         scene=dict(
-            xaxis_title="X",
-            yaxis_title="Y",
-            zaxis_title="Z"
+            xaxis=dict(title="X Axis", showgrid=True, gridcolor='lightgray'),
+            yaxis=dict(title="Y Axis", showgrid=True, gridcolor='lightgray'),
+            zaxis=dict(title="Z Axis", showgrid=True, gridcolor='lightgray'),
+            bgcolor='rgba(240,240,240,0.1)',
+            camera=dict(
+                eye=dict(x=1.5, y=1.5, z=1.5),  # Better viewing angle
+                center=dict(x=0, y=0, z=0),
+                up=dict(x=0, y=0, z=1)
+            )
         ),
-        height=500
+        height=500,
+        margin=dict(l=0, r=0, t=50, b=0)
     )
     
     return fig
@@ -412,6 +442,18 @@ def main():
     with st.sidebar:
         st.header("🧠 AI Architecture Explorer")
         
+        # Add expandable AI concepts overview
+        with st.expander("📚 Quick AI Concepts Guide", expanded=False):
+            st.markdown("""
+            **🔮 RNN:** Sequential memory for trends  
+            **👁️ CNN:** Pattern detection in data  
+            **🎯 Transformer:** Multi-feature attention  
+            **🔄 VAE:** Creative generation from patterns  
+            **📊 Autoencoder:** Data compression & reconstruction  
+            **🤖 LLM:** Human-like reasoning  
+            **🎭 Ensemble:** Combining multiple AI models  
+            """)
+        
         concept_tab = st.selectbox("Select AI Concept:", [
             "🌐 3D Agent Network",
             "🔄 Real-time API Monitor", 
@@ -424,32 +466,123 @@ def main():
         
         if concept_tab == "🌐 3D Agent Network":
             st.plotly_chart(create_3d_agent_network(), use_container_width=True)
-            st.info("🚀 Interactive 3D visualization of multi-agent collaboration")
+            st.markdown("""
+            **🧠 Why Each AI Technique?**
+            
+            **🔮 RNN + Temporal CNN for Flights:**
+            - **RNN:** Learns from sequential price history over days/weeks
+            - **Temporal CNN:** Detects short-term volatility patterns within hours
+            - **Why:** Flight prices have both long-term trends AND short-term spikes
+            
+            **🎯 Transformer Attention for Hotels:**
+            - **Multi-head attention:** Focuses on different features simultaneously
+            - **Why:** Hotels have many features (price, location, amenities, reviews)
+            - **Benefit:** Weighs importance of each feature for each user
+            
+            **🔄 VAE for Attractions:**
+            - **Encoder:** Maps destinations to latent preference space
+            - **Decoder:** Generates personalized attraction recommendations
+            - **Why:** Creates new combinations based on learned patterns
+            
+            **📊 Autoencoder for Weather:**
+            - **Compression:** Reduces complex weather data to key factors
+            - **Reconstruction:** Generates actionable travel advice
+            - **Why:** Weather has many variables, but only few affect travel
+            
+            **🤖 LLM for Insights:**
+            - **Natural language understanding:** Interprets user preferences
+            - **Contextual reasoning:** Provides intelligent recommendations
+            - **Why:** Adds human-like intelligence to technical analysis
+            """)
         
         elif concept_tab == "🔄 Real-time API Monitor":
             api_monitor = st.empty()
             if st.button("🔄 Refresh API Status"):
                 api_monitor.plotly_chart(create_real_time_api_monitor(), use_container_width=True)
+            st.info("🌐 Shows live response times from actual travel booking APIs")
         
         elif concept_tab == "🔮 RNN: Long-term Trends":
             st.plotly_chart(create_rnn_sequence_analysis(), use_container_width=True)
-            st.info("🔮 **RNN** learns sequential patterns over days/weeks for trend prediction")
+            st.markdown("""
+            **🔮 RNN (Recurrent Neural Networks)**
+            
+            **What it does:**
+            - Analyzes flight price sequences over 30+ days
+            - Learns seasonal patterns and weekly cycles
+            - Predicts future price trends
+            
+            **Why for flights:**
+            - Flight prices follow temporal patterns
+            - Weekend vs weekday pricing
+            - Holiday season effects
+            - Booking timing optimization
+            
+            **Technical:** Uses memory cells to remember past prices and predict future trends
+            """)
         
         elif concept_tab == "👁️ CNN: Short-term Patterns":
             st.plotly_chart(create_temporal_cnn_visualization(), use_container_width=True)
-            st.info("👁️ **Temporal CNN** detects short-term volatility and hourly price patterns")
+            st.markdown("""
+            **👁️ Temporal CNN (Convolutional Neural Networks)**
+            
+            **What it does:**
+            - Detects short-term price volatility (hourly patterns)
+            - Identifies sudden price spikes or drops
+            - Recognizes time-of-day pricing patterns
+            
+            **Why temporal CNN:**
+            - **Temporal:** Works with time-series data (not images)
+            - **Convolution:** Slides filters over time to detect patterns
+            - **Local patterns:** Finds volatility bursts in specific time windows
+            
+            **vs Regular CNN:** Regular CNN works on images, Temporal CNN works on time-series price data
+            
+            **Technical:** Applies convolution kernels to detect short-term price anomalies
+            """)
         
         elif concept_tab == "🎯 Transformer Attention":
             st.plotly_chart(create_attention_heatmap(), use_container_width=True)
-            st.info("🎯 Hotel agent uses attention to focus on relevant features for each hotel")
+            st.markdown("""
+            **🎯 Transformer Attention Mechanism**
+            
+            **What it does:**
+            - Simultaneously focuses on multiple hotel features
+            - Weighs importance of price vs location vs amenities
+            - Different attention heads focus on different aspects
+            
+            **Why for hotels:**
+            - Hotels have complex multi-dimensional features
+            - User preferences vary (some prioritize location, others price)
+            - Need to balance multiple competing factors
+            
+            **Multi-head attention:** Like having multiple experts, each focusing on different aspects
+            
+            **Technical:** Computes attention weights to determine feature importance for ranking
+            """)
         
         elif concept_tab == "🔄 VAE Latent Space":
             st.plotly_chart(create_vae_latent_space(), use_container_width=True)
-            st.info("🔄 Attraction agent maps destinations to latent space, then samples and decodes attractions")
+            st.markdown("""
+            **🔄 Variational Autoencoders (VAE)**
+            
+            **What it does:**
+            1. **Encoder:** Maps destinations to latent preference space
+            2. **Sampling:** Explores similar preference regions
+            3. **Decoder:** Generates new attraction recommendations
+            
+            **Why for attractions:**
+            - Creates personalized recommendations beyond simple matching
+            - Discovers hidden connections between attractions
+            - Generates novel combinations based on learned patterns
+            
+            **Latent Space:** Hidden representation where similar attractions cluster together
+            
+            **vs Regular recommendations:** VAE can generate creative suggestions, not just filter existing ones
+            """)
         
         elif concept_tab == "📊 Live Sentiment Analysis":
             st.plotly_chart(create_live_sentiment_analysis(), use_container_width=True)
-            st.info("📈 Real-time sentiment analysis of travel destinations")
+            st.info("📈 Real-time sentiment analysis of travel destinations from social media and reviews")
     
     # Main interface
     col1, col2 = st.columns([1, 2])
