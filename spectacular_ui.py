@@ -43,6 +43,8 @@ def create_real_time_api_monitor():
         showlegend=False
     )
     
+    return fig
+    
 def create_live_sentiment_analysis():
     """Create live sentiment analysis of travel reviews"""
     
