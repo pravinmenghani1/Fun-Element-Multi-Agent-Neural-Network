@@ -525,7 +525,7 @@ async def generate_gru_prediction(symbol, current_price, days):
         'trend_strength': trend_strength,
         'direction': direction,
         'efficiency_score': np.random.uniform(0.8, 0.95),
-        'recent_momentum': 'Positive' if recent_trend > 1.01 else 'Negative' if recent_trend < 0.99 else 'Neutral'
+        'recent_momentum': 'Positive' if momentum['recent_trend'] > 1.01 else 'Negative' if momentum['recent_trend'] < 0.99 else 'Neutral'
     }
 
 async def generate_cnn_prediction(symbol, current_price, days):
